@@ -103,6 +103,8 @@ class KafkaToSolrProcessor:
             if elapsed_time >= self.max_wait_time and self.message_buffer:
                 self._insert_to_solr()
                 last_insert_time = time.time()
+                self._commit_to_solr()
+
 
     def _extract_and_process_payload(self, message):
         try:
@@ -139,6 +141,14 @@ class KafkaToSolrProcessor:
 
         self.message_buffer = []
 
+    def _commit_to_solr(self):
+        logger.info("Committing to Solr")
+        try:
+            self.solr.commit()
+            logger.info("Successfully committed to Solr")
+        except Exception as e:
+            logger.error(f"Error during Solr commit: {e}")
+
 
 def get_env_var(var_name, default_value=None):
     value = os.environ.get(var_name)
@@ -170,7 +180,7 @@ if __name__ == "__main__":
     MAX_WAIT_TIME = int(get_env_var('MAX_WAIT_TIME', '10'))
     WAIT_TIME_EMPTY_QUEUE = int(get_env_var('WAIT_TIME_EMPTY_QUEUE', '300'))
 
-    logger.info(f"Configuration loaded from environment variables:")
+    logger.info("Configuration loaded from environment variables:")
     logger.info(f"KAFKA_BOOTSTRAP_SERVERS: {KAFKA_BOOTSTRAP_SERVERS}")
     logger.info(f"KAFKA_TOPIC: {KAFKA_TOPIC}")
     logger.info(f"SOLR_URL: {SOLR_URL}")
