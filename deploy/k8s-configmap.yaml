@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-to-solr-config
+  labels:
+    app: kafka-to-solr
+data:
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  KAFKA_TOPIC: "my-topic"
+  SOLR_URL: "http://solr-service:8983/solr/my-core"
+  CONSUMER_GROUP_ID: "solr-indexer"
+  BATCH_SIZE: "50"
+  MAX_WAIT_TIME: "10"
+  WAIT_TIME_EMPTY_QUEUE: "300"
+

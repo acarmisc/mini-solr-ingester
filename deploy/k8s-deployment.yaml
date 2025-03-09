@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-to-solr
+  labels:
+    app: kafka-to-solr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-to-solr
+  template:
+    metadata:
+      labels:
+        app: kafka-to-solr
+    spec:
+      containers:
+      - name: kafka-to-solr
+        image: your-registry/kafka-to-solr:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        envFrom:
+        - configMapRef:
+            name: kafka-to-solr-config
+        livenessProbe:
+          exec:
+            command:
+            - ps
+            - aux
+            - '|'
+            - grep
+            - '[p]ython'
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          exec:
+            command:
+            - ps
+            - aux
+            - '|'
+            - grep
+            - '[p]ython'
+          initialDelaySeconds: 15
+          periodSeconds: 30
