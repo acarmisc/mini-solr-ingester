@@ -1,4 +1,4 @@
-# Mini Ingester
+# Kafka to Solr Ingester
 
 A lightweight Python application that consumes documents from a Kafka topic and indexes them into a Solr instance.
 
@@ -21,6 +21,8 @@ The application is fully configurable through environment variables:
 | `KAFKA_TOPIC` | Kafka topic to consume from | `my_topic` |
 | `SOLR_URL` | Solr URL including core name | `http://localhost:8983/solr/my_core` |
 | `CONSUMER_GROUP_ID` | Kafka consumer group ID | `solr-indexer` |
+| `PAYLOAD_FIELD` | Specific field from Kafka message to index (if not set, uses entire message) | Not set |
+| `DESERIALIZE_TEXT` | Whether to deserialize string payloads as JSON | `False` |
 | `BATCH_SIZE` | Number of messages to collect before indexing | `50` |
 | `MAX_WAIT_TIME` | Maximum wait time in seconds before indexing | `10` |
 | `WAIT_TIME_EMPTY_QUEUE` | Wait time in seconds after emptying the queue | `300` |
@@ -40,4 +42,18 @@ docker run -e KAFKA_BOOTSTRAP_SERVERS=my-kafka:9092 -e SOLR_URL=http://my-solr:8
 
 A deployment manifest is provided for Kubernetes, which includes:
 - A ConfigMap for environment variables
-- A Deployment with resource limits and
+- A Deployment with resource limits and health checks
+
+```bash
+kubectl apply -f kubernetes-manifest.yaml
+```
+
+## Dependencies
+
+- Python 3.12+
+- kafka-python
+- pysolr
+
+## License
+
+[MIT License](LICENSE)
